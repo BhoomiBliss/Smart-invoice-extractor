@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>📄 Smart Invoice Extractor</title>
+<style>
+  :root {
+    --bg-light: #f9f9f9;
+    --bg-dark: #1e1e1e;
+    --text-light: #000;
+    --text-dark: #f0f0f0;
+    --primary: #007bff;
+    --highlight: #ffcccc;
+  }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--bg-light);
+    color: var(--text-light);
+    transition: all 0.3s;
+  }
+
+  body.dark {
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+  }
+
+  header {
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    background: var(--primary);
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  #themeToggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--primary);
+    border: none;
+    color: #fff;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  #uploadArea {
+    margin: 40px auto;
+    padding: 40px;
+    border: 2px dashed var(--primary);
+    border-radius: 12px;
+    text-align: center;
+    width: 80%;
+    max-width: 500px;
+    cursor: pointer;
+    transition: background 0.3s, border 0.3s;
+    position: relative;
+  }
+
+  #uploadArea.dragover {
+    background-color: rgba(0,123,255,0.1);
+    border-color: #0056b3;
+  }
+
+  #uploadArea input {
+    display: none;
+  }
+
+  #fileName {
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: var(--primary);
+  }
+
+  button, #copyJsonBtn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 20px;
+  }
+
+  button:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+  }
+
+  #loading {
+    display: none;
+    margin-top: 20px;
+    font-weight: bold;
+    color: var(--primary);
+  }
+
+  pre {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    overflow-x: auto;
+    width: 90%;
+    max-width: 800px;
+    margin: 20px 0;
+  }
+
+  body.dark pre {
+    background: #2c2c2c;
+    color: #f0f0f0;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 90%;
+    max-width: 800px;
+    margin-bottom: 40px;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+  }
+
+  th {
+    background: #eee;
+  }
+
+  body.dark th {
+    background: #333;
+  }
+
+  td.right {
+    text-align: right;
+  }
+
+  .highlight {
+    background-color: var(--highlight);
+  }
+</style>
+</head>
+<body>
+
+<header>📄 Smart Invoice Extractor</header>
+<button id="themeToggle">🌙 Dark Mode</button>
+
+<div id="uploadArea">
+  <p>Drag & Drop your invoice image here<br>or click to select a file</p>
+  <input type="file" id="fileInput" accept="image/*">
+  <div id="fileName">No file selected</div>
+</div>
+
+<button id="extractBtn">Extract Table Data</button>
+<div id="loading">⏳ Processing invoice...</div>
+
+<h2>Extracted JSON Data</h2>
+<pre id="result"></pre>
+<button id="copyJsonBtn">📋 Copy JSON</button>
+
+<h2>Table View</h2>
+<table id="tableView">
+  <thead>
+    <tr>
+      <th>Description</th>
+      <th>Quantity</th>
+      <th>Unit Price</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+  <tfoot>
+    <tr>
+      <td colspan="3" class="right">Subtotal</td>
+      <td id="subtotalCell">0</td>
+    </tr>
+    <tr>
+      <td colspan="3" class="right">Tax</td>
+      <td id="taxCell">0</td>
+    </tr>
+    <tr>
+      <td colspan="3" class="right">Shipping</td>
+      <td id="shippingCell">0</td>
+    </tr>
+    <tr>
+      <td colspan="3" class="right">Total</td>
+      <td id="totalCell">0</td>
+    </tr>
+  </tfoot>
+</table>
+
+<script>
+const body = document.body;
+const themeToggle = document.getElementById("themeToggle");
+const fileInput = document.getElementById("fileInput");
+const uploadArea = document.getElementById("uploadArea");
+const extractBtn = document.getElementById("extractBtn");
+const loading = document.getElementById("loading");
+const result = document.getElementById("result");
+const tableBody = document.querySelector("#tableView tbody");
+const subtotalCell = document.getElementById("subtotalCell");
+const taxCell = document.getElementById("taxCell");
+const shippingCell = document.getElementById("shippingCell");
+const totalCell = document.getElementById("totalCell");
+const copyJsonBtn = document.getElementById("copyJsonBtn");
+const fileNameDisplay = document.getElementById("fileName");
+
+// Toggle theme
+themeToggle.onclick = () => {
+  body.classList.toggle("dark");
+  themeToggle.textContent = body.classList.contains("dark") ? "☀️ Light Mode" : "🌙 Dark Mode";
+};
+
+// Show selected file name
+fileInput.addEventListener("change", () => {
+  fileNameDisplay.textContent = fileInput.files[0]?.name || "No file selected";
+});
+
+uploadArea.addEventListener("click", () => fileInput.click());
+uploadArea.addEventListener("dragover", e => {
+  e.preventDefault();
+  uploadArea.classList.add("dragover");
+});
+uploadArea.addEventListener("dragleave", e => {
+  e.preventDefault();
+  uploadArea.classList.remove("dragover");
+});
+uploadArea.addEventListener("drop", e => {
+  e.preventDefault();
+  uploadArea.classList.remove("dragover");
+  if (e.dataTransfer.files.length) {
+    fileInput.files = e.dataTransfer.files;
+    fileNameDisplay.textContent = e.dataTransfer.files[0].name;
+  }
+});
+
+function parseCurrency(value) {
+  if (!value) return 0;
+  return Number(value.toString().replace(/[^0-9.-]+/g, "")) || 0;
+}
+
+extractBtn.onclick = async () => {
+  if (!fileInput.files[0]) return;
+
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+
+  reader.onload = async () => {
+    const base64 = reader.result.split(",")[1];
+
+    loading.style.display = "block";
+    extractBtn.disabled = true;
+    result.textContent = "";
+    tableBody.innerHTML = "";
+    subtotalCell.textContent = taxCell.textContent = shippingCell.textContent = totalCell.textContent = "0";
+
+    try {
+      const res = await fetch("http://localhost:5000/extract-invoice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ base64Image: base64 }),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        result.textContent = `❌ Extraction failed! Server returned status ${res.status}\n${text}`;
+        return;
+      }
+
+      const data = await res.json();
+      if (!data.success) {
+        result.textContent = `❌ Extraction failed: ${data.error || "Unknown"}`;
+        return;
+      }
+
+      const invoice = data.data;
+      invoice.vendor = invoice.vendor || "Not provided";
+      invoice.tax_id = invoice.tax_id || "Not provided in the image";
+      invoice.invoice_number = invoice.invoice_number || "-";
+      invoice.date = invoice.date || "-";
+      invoice.due_date = invoice.due_date || "-";
+
+      result.textContent = JSON.stringify(invoice, null, 2);
+
+      copyJsonBtn.onclick = () => {
+        navigator.clipboard.writeText(JSON.stringify(invoice, null, 2));
+        copyJsonBtn.textContent = "✅ Copied!";
+        setTimeout(() => copyJsonBtn.textContent = "📋 Copy JSON", 1500);
+      };
+
+      let calculatedSubtotal = 0;
+      tableBody.innerHTML = "";
+      invoice.items.forEach(item => {
+        const row = document.createElement("tr");
+        const qty = parseCurrency(item.quantity);
+        const price = parseCurrency(item.unit_price);
+        const total = parseCurrency(item.total);
+        const expectedTotal = qty * price;
+        const mismatchClass = expectedTotal !== total ? "highlight" : "";
+
+        row.innerHTML = `
+          <td>${item.description || "-"}</td>
+          <td>${qty}</td>
+          <td>${price}</td>
+          <td class="${mismatchClass}">${total}</td>
+        `;
+        tableBody.appendChild(row);
+        calculatedSubtotal += total;
+      });
+
+      const subtotal = parseCurrency(invoice.subtotal || calculatedSubtotal);
+      const tax = parseCurrency(invoice.tax || 0);
+      const shipping = parseCurrency(invoice.shipping || 0);
+      const total = parseCurrency(invoice.total || subtotal + tax + shipping);
+
+      subtotalCell.textContent = subtotal.toFixed(2);
+      taxCell.textContent = tax.toFixed(2);
+      shippingCell.textContent = shipping.toFixed(2);
+      totalCell.textContent = total.toFixed(2);
+
+      if ((subtotal + tax + shipping).toFixed(2) != total.toFixed(2)) {
+        totalCell.classList.add("highlight");
+      } else totalCell.classList.remove("highlight");
+
+    } catch (err) {
+      result.textContent = "❌ Extraction failed: " + err;
+    } finally {
+      loading.style.display = "none";
+      extractBtn.disabled = false;
+    }
+  };
+
+  reader.readAsDataURL(file);
+};
+</script>
+</body>
+</html>

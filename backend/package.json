@@ -1,10 +1,14 @@
 {
   "name": "invoice-json-backend",
   "version": "1.0.0",
-  "type": "module",
+  "types": [
+    "node",
+    "jest"
+  ],
   "main": "dist/server.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts"
+    "dev": "tsx watch src/server.ts",
+    "test": "cross-env NODE_ENV=test jest"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -15,7 +19,13 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.17",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.4.2",
+    "@types/supertest": "^7.2.0",
+    "cross-env": "^10.1.0",
+    "jest": "^30.2.0",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.6",
     "ts-node-dev": "^2.0.0",
     "tsx": "^4.21.0",
     "typescript": "^5.1.6"

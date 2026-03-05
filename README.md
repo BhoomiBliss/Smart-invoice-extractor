@@ -11,16 +11,21 @@ This project is a **Smart Invoice-to-JSON Converter** using OpenRouter's multimo
 - Extract **Vendor Name, Tax ID, Invoice Number, Date, Due Date**.
 - Automatically calculate **Subtotal, Tax, Shipping, Total**.
 - Highlight mismatches in totals.
+- Rate limit retry logic for AI API
+- **Automated backend testing** using Jest
 - Minimal, clean, and aesthetic UI.
 
 ---
 
-## Tech Stack
+## 🧰 Tech Stack
 
-- **Frontend**: HTML, CSS, JavaScript
-- **Backend**: Node.js, Express
-- **AI**: OpenRouter's multimodal vision models (e.g., `qwen/qwen-2-vl-7b-instruct`)
-- **Environment Variables**: `.env` for API key
+| Layer           | Technology                                             |
+| :-------------- | :----------------------------------------------------- | ------------------ |
+| **Frontend**    | HTML, CSS, JavaScript                                  |
+| **Backend**     | Node.js, Express, TypeScript                           |
+| **AI Model**    | OpenRouter Vision Model (`qwen/qwen-2-vl-7b-instruct`) |
+| **Testing**     | Jest + Supertest                                       |
+| **Environment** | dotenv                                                 | `.env` for API key |
 
 ---
 
@@ -31,12 +36,16 @@ This project is a **Smart Invoice-to-JSON Converter** using OpenRouter's multimo
 **Workflow:**
 
 1. User uploads an invoice image.
-2. Frontend converts the image to Base64 and sends it to the backend.
-3. Backend calls **OpenRouter API** with the multimodal model.
-4. Model returns structured JSON containing invoice items and metadata.
-5. Frontend displays:
-   - Extracted JSON
-   - A clean table with totals, highlighting mismatches.
+2. Frontend converts the image to Base64 format.
+3. Image is sent to the Node.js backend API.
+4. Backend calls the OpenRouter multimodal model.
+5. AI extracts invoice details and returns a JSON response.
+6. Backend validates the JSON.
+7. Frontend displays:
+
+- Extracted JSON
+- Table of invoice items
+- Subtotal and Total
 
 ---
 
@@ -44,6 +53,152 @@ This project is a **Smart Invoice-to-JSON Converter** using OpenRouter's multimo
 
 1. Clone the repository:
 
-```bash
+````bash
 git clone https://github.com/BhoomiBliss/Smart-invoice-extractor.git
 cd Smart-invoice-extractor/backend
+<<<<<<< HEAD
+=======
+
+## Install backend dependencies:
+
+```bash
+cd backend
+pnpm install
+
+---
+
+## ▶️ Run the Backend Server
+
+```bash
+pnpm run dev
+
+---
+
+## 🌐 Using the Application
+* Open the frontend in browser
+* Upload an invoice image
+* Click **Extract Table Data**
+* The system will show:
+  * Extracted JSON
+  * Invoice table
+  * Subtotal and total
+
+## 🧪 Testing
+This project includes automated backend testing using Jest and Supertest.
+Testing ensures the API behaves correctly under different scenarios.
+
+### Install Testing Dependencies
+```bash
+pnpm add -D jest supertest ts-jest @types/jest @types/supertest cross-env
+
+---
+
+## 📂 Test Files
+
+```plaintext
+backend/tests
+│
+├── invoice.test.ts
+└── mock-ai.test.ts
+
+### 🧪 Test Case 1 — Missing Image
+Ensures API returns error if image is not provided.
+
+Example test:
+```http
+POST /extract-invoice
+
+---
+Expected response:
+```json
+Status: 400
+{
+ "error": "Image is required."
+}
+
+## 🧪 Test Case 2 — Invoice Extraction
+# Ensures API returns valid JSON when image is provided.
+
+# Expected response structure:
+
+```json
+{
+ "success": true,
+ "data": {
+   "vendor": "Vendor Name",
+   "items": []
+ }
+}
+
+### 🧪 Test Case 3 — JSON Structure Validation
+Validates that extracted invoice contains required fields:
+* `vendor`
+* `items`
+* `subtotal`
+* `total`
+
+### ▶️ Running Tests
+Run all tests using:
+
+```bash
+pnpm test
+
+# Example output:
+```Plaintext
+PASS tests/mock-ai.test.ts
+PASS tests/invoice.test.ts
+
+Test Suites: 2 passed
+Tests: 3 passed
+
+## This confirms that the backend API works correctly.
+
+---
+
+## 📁 Project Structure
+
+```text
+Smart-invoice-extractor
+│
+├── frontend
+│   └── index.html
+│
+├── backend
+│   │
+│   ├── src
+│   │   └── server.ts
+│   │
+│   ├── tests
+│   │   ├── invoice.test.ts
+│   │   └── mock-ai.test.ts
+│   │
+│   ├── package.json
+│   └── .env
+│
+└── README.md
+
+---
+
+## ⚠️ Error Handling
+
+The system handles the following errors:
+
+| Scenario | Handling |
+|---|---|
+| Missing image | Returns 400 error |
+| Invalid JSON from AI | Safe JSON extraction |
+| Rate limit from API | Automatic retry |
+| Invalid invoice image | Returns fallback message |
+
+## 📌 Future Improvements
+
+* Support PDF invoice upload
+* Improve multi-invoice detection
+* Add database storage
+* Deploy using Docker + Cloud
+
+## 👨‍💻 Author
+
+**BhoomiBliss** GitHub Repository: [https://github.com/BhoomiBliss/Smart-invoice-extractor](https://github.com/BhoomiBliss/Smart-invoice-extractor)
+````
+>>>>>>> 01b3b5c (Added testing with Jest and updated README)

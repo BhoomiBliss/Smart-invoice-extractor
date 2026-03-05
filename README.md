@@ -58,7 +58,6 @@ This project is a **Smart Invoice-to-JSON Converter** using OpenRouter's multimo
 git clone https://github.com/BhoomiBliss/Smart-invoice-extractor.git
 cd Smart-invoice-extractor/backend
 ```
-=======
 
 ## Install backend dependencies:
 
@@ -172,5 +171,3 @@ The system handles the following errors:
 ## 👨‍💻 Author
 
 **BhoomiBliss** GitHub Repository: [https://github.com/BhoomiBliss/Smart-invoice-extractor](https://github.com/BhoomiBliss/Smart-invoice-extractor)
-````
->>>>>>> 01b3b5c (Added testing with Jest and updated README)

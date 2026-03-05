@@ -26,7 +26,7 @@ This project is a **Smart Invoice-to-JSON Converter** using OpenRouter's multimo
 
 ## System Architecture
 
-![System Architecture](Sys-arch.jpg)
+![System Architecture](System%20Architecture/Sys-arch.jpg)
 
 **Workflow:**
 

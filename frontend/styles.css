@@ -1,0 +1,132 @@
+:root {
+  --bg-light: #f9f9f9;
+  --bg-dark: #1e1e1e;
+  --text-light: #000;
+  --text-dark: #f0f0f0;
+  --primary: #007bff;
+  --highlight: #ffcccc;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--bg-light);
+  color: var(--text-light);
+  transition: all 0.3s;
+}
+
+body.dark {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+header {
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+  background: var(--primary);
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+#themeToggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--primary);
+  border: none;
+  color: #fff;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#uploadArea {
+  margin: 40px auto;
+  padding: 40px;
+  border: 2px dashed var(--primary);
+  border-radius: 12px;
+  text-align: center;
+  width: 80%;
+  max-width: 500px;
+  cursor: pointer;
+}
+
+#uploadArea.dragover {
+  background-color: rgba(0,123,255,0.1);
+}
+
+#uploadArea input {
+  display: none;
+}
+
+#fileName {
+  margin-top: 10px;
+  font-weight: bold;
+  font-size: 0.95rem;
+  color: var(--primary);
+}
+
+button {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+#loading {
+  display: none;
+  margin-top: 20px;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+pre {
+  background: #fff;
+  border-radius: 8px;
+  padding: 15px;
+  overflow-x: auto;
+  width: 90%;
+  max-width: 800px;
+}
+
+body.dark pre {
+  background: #2c2c2c;
+  color: #f0f0f0;
+}
+
+table {
+  border-collapse: collapse;
+  width: 90%;
+  max-width: 800px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+th {
+  background: #eee;
+}
+
+body.dark th {
+  background: #333;
+}
+
+td.right {
+  text-align: right;
+}
+
+.highlight {
+  background-color: var(--highlight);
+}

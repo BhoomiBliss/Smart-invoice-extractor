@@ -20,12 +20,13 @@ This project is a **Smart Invoice-to-JSON Converter** using OpenRouter's multimo
 ## 🧰 Tech Stack
 
 | Layer           | Technology                                             |
-| :-------------- | :----------------------------------------------------- | ------------------ |
+| :-------------- | :----------------------------------------------------- |
 | **Frontend**    | HTML, CSS, JavaScript                                  |
 | **Backend**     | Node.js, Express, TypeScript                           |
 | **AI Model**    | OpenRouter Vision Model (`qwen/qwen-2-vl-7b-instruct`) |
 | **Testing**     | Jest + Supertest                                       |
-| **Environment** | dotenv                                                 | `.env` for API key |
+| **Environment** | dotenv (`.env` for API key)                            |
+
 
 ---
 
@@ -53,10 +54,10 @@ This project is a **Smart Invoice-to-JSON Converter** using OpenRouter's multimo
 
 1. Clone the repository:
 
-````bash
+```bash
 git clone https://github.com/BhoomiBliss/Smart-invoice-extractor.git
 cd Smart-invoice-extractor/backend
-<<<<<<< HEAD
+```
 =======
 
 ## Install backend dependencies:
@@ -64,6 +65,7 @@ cd Smart-invoice-extractor/backend
 ```bash
 cd backend
 pnpm install
+```
 
 ---
 
@@ -71,6 +73,7 @@ pnpm install
 
 ```bash
 pnpm run dev
+```
 
 ---
 
@@ -90,6 +93,7 @@ Testing ensures the API behaves correctly under different scenarios.
 ### Install Testing Dependencies
 ```bash
 pnpm add -D jest supertest ts-jest @types/jest @types/supertest cross-env
+```
 
 ---
 
@@ -100,48 +104,14 @@ backend/tests
 │
 ├── invoice.test.ts
 └── mock-ai.test.ts
-
-### 🧪 Test Case 1 — Missing Image
-Ensures API returns error if image is not provided.
-
-Example test:
-```http
-POST /extract-invoice
-
----
-Expected response:
-```json
-Status: 400
-{
- "error": "Image is required."
-}
-
-## 🧪 Test Case 2 — Invoice Extraction
-# Ensures API returns valid JSON when image is provided.
-
-# Expected response structure:
-
-```json
-{
- "success": true,
- "data": {
-   "vendor": "Vendor Name",
-   "items": []
- }
-}
-
-### 🧪 Test Case 3 — JSON Structure Validation
-Validates that extracted invoice contains required fields:
-* `vendor`
-* `items`
-* `subtotal`
-* `total`
+```
 
 ### ▶️ Running Tests
 Run all tests using:
 
 ```bash
 pnpm test
+```
 
 # Example output:
 ```Plaintext
@@ -150,6 +120,7 @@ PASS tests/invoice.test.ts
 
 Test Suites: 2 passed
 Tests: 3 passed
+```
 
 ## This confirms that the backend API works correctly.
 
@@ -176,6 +147,7 @@ Smart-invoice-extractor
 │   └── .env
 │
 └── README.md
+```
 
 ---
 

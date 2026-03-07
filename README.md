@@ -66,11 +66,11 @@ This project is a **Smart Invoice-to-JSON Converter** using OpenRouter's multimo
 
 ### Upload Invoice
 
-![Upload UI](screenshots/upload.png)
+![System Architecture](uploadimage)
 
 ### Extracted Table
 
-![Result](screenshots/result.png)
+![System Architecture](resultpage)
 
 ---
 

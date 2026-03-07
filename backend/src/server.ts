@@ -2,20 +2,15 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import OpenAI from "openai";
-
 dotenv.config();
-
 if (!process.env.OPENROUTER_API_KEY && process.env.NODE_ENV !== "test") {
   console.error("❌ OPENROUTER_API_KEY missing in .env");
   process.exit(1);
 }
-
 const app = express();
 const port = process.env.PORT || 5000;
-
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
-
 const openai = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -70,6 +65,9 @@ app.post("/extract-invoice", async (req, res) => {
         data: {
           vendor: "Test Vendor",
           tax_id: "12345",
+          invoice_number: "INV-001",
+          date: "2026-03-05",
+          due_date: "2026-03-10",
           items: [
             {
               description: "Test Item",
@@ -79,7 +77,9 @@ app.post("/extract-invoice", async (req, res) => {
             },
           ],
           subtotal: 100,
-          total: 100,
+          tax: 10,
+          shipping: 5,
+          total: 115,
         },
       });
     }
@@ -195,6 +195,27 @@ Return ONLY JSON.
         error: "AI did not return valid JSON",
         raw_output: rawText,
       });
+    }
+    // 🔹 Verify totals
+    if (parsed.items && Array.isArray(parsed.items)) {
+      const calculatedTotal = parsed.items.reduce(
+        (sum: number, item: any) => sum + Number(item.total || 0),
+        0,
+      );
+
+      const invoiceTotal = Number(parsed.total || 0);
+
+      // difference check
+      const difference = Math.abs(calculatedTotal - invoiceTotal);
+
+      if (difference > 1) {
+        console.log("⚠ Total mismatch detected");
+
+        parsed.total_mismatch = true;
+        parsed.calculated_total = calculatedTotal;
+      } else {
+        parsed.total_mismatch = false;
+      }
     }
 
     res.json({

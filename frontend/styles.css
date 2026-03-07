@@ -129,4 +129,8 @@ td.right {
 
 .highlight {
   background-color: var(--highlight);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 4c44fc3 (Added Jest tests and fixed mock invoice structure)

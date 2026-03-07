@@ -27,7 +27,10 @@ This project is a **Smart Invoice-to-JSON Converter** using OpenRouter's multimo
 | **AI Model**    | OpenRouter Vision Model (`qwen/qwen-2-vl-7b-instruct`) |
 | **Testing**     | Jest + Supertest                                       |
 | **Environment** | dotenv (`.env` for API key)                            |
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4c44fc3 (Added Jest tests and fixed mock invoice structure)
 
 ---
 
@@ -48,6 +51,29 @@ This project is a **Smart Invoice-to-JSON Converter** using OpenRouter's multimo
 - Extracted JSON
 - Table of invoice items
 - Subtotal and Total
+
+---
+
+## 🧠 How the AI Extraction Works
+
+1. The uploaded invoice image is converted to a Base64 string in the frontend.
+2. The Base64 image is sent to the backend API.
+3. The backend sends the image and prompt to the OpenRouter Vision model.
+4. The AI analyzes the spatial layout of the invoice and extracts structured data.
+5. The backend validates the JSON and verifies invoice totals.
+6. The frontend displays the extracted data as a table and JSON view.
+
+---
+
+## 📸 Screenshots
+
+### Upload Invoice
+
+![Upload UI](screenshots/upload.png)
+
+### Extracted Table
+
+![Result](screenshots/result.png)
 
 ---
 
@@ -78,19 +104,22 @@ pnpm run dev
 ---
 
 ## 🌐 Using the Application
-* Open the frontend in browser
-* Upload an invoice image
-* Click **Extract Table Data**
-* The system will show:
-  * Extracted JSON
-  * Invoice table
-  * Subtotal and total
+
+- Open the frontend in browser
+- Upload an invoice image
+- Click **Extract Table Data**
+- The system will show:
+  - Extracted JSON
+  - Invoice table
+  - Subtotal and total
 
 ## 🧪 Testing
+
 This project includes automated backend testing using Jest and Supertest.
 Testing ensures the API behaves correctly under different scenarios.
 
 ### Install Testing Dependencies
+
 ```bash
 pnpm add -D jest supertest ts-jest @types/jest @types/supertest cross-env
 ```
@@ -107,6 +136,7 @@ backend/tests
 ```
 
 ### ▶️ Running Tests
+
 Run all tests using:
 
 ```bash
@@ -114,6 +144,7 @@ pnpm test
 ```
 
 # Example output:
+
 ```Plaintext
 PASS tests/mock-ai.test.ts
 PASS tests/invoice.test.ts
@@ -155,19 +186,19 @@ Smart-invoice-extractor
 
 The system handles the following errors:
 
-| Scenario | Handling |
-|---|---|
-| Missing image | Returns 400 error |
-| Invalid JSON from AI | Safe JSON extraction |
-| Rate limit from API | Automatic retry |
+| Scenario              | Handling                 |
+| --------------------- | ------------------------ |
+| Missing image         | Returns 400 error        |
+| Invalid JSON from AI  | Safe JSON extraction     |
+| Rate limit from API   | Automatic retry          |
 | Invalid invoice image | Returns fallback message |
 
 ## 📌 Future Improvements
 
-* Support PDF invoice upload
-* Improve multi-invoice detection
-* Add database storage
-* Deploy using Docker + Cloud
+- Support PDF invoice upload
+- Improve multi-invoice detection
+- Add database storage
+- Deploy using Docker + Cloud
 
 ## 👨‍💻 Author
 

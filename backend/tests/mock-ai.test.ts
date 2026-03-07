@@ -1,29 +1,23 @@
-/// <reference types="jest" />
-
 import request from "supertest";
 import app from "../src/server";
 
-describe("Invoice API - Mock AI Test", () => {
+describe("Invoice JSON structure", () => {
 
-  test("should process invoice and return JSON structure", async () => {
-
-    const fakeImage = "fakebase64image";
+  it("should return valid invoice structure", async () => {
 
     const res = await request(app)
       .post("/extract-invoice")
-      .send({
-        base64Image: fakeImage
-      });
+      .send({ base64Image: "mockimage" });
 
-    expect(res.statusCode).toBe(200);
+    const data = res.body.data;
 
-    expect(res.body).toHaveProperty("success");
+    expect(data.vendor).toBeDefined();
+    expect(data.items).toBeInstanceOf(Array);
 
-    expect(res.body.data).toHaveProperty("vendor");
-
-    expect(res.body.data).toHaveProperty("items");
-
-    expect(Array.isArray(res.body.data.items)).toBe(true);
+    expect(data).toHaveProperty("subtotal");
+    expect(data).toHaveProperty("tax");
+    expect(data).toHaveProperty("shipping");
+    expect(data).toHaveProperty("total");
 
   });
 

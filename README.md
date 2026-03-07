@@ -27,10 +27,7 @@ This project is a **Smart Invoice-to-JSON Converter** using OpenRouter's multimo
 | **AI Model**    | OpenRouter Vision Model (`qwen/qwen-2-vl-7b-instruct`) |
 | **Testing**     | Jest + Supertest                                       |
 | **Environment** | dotenv (`.env` for API key)                            |
-<<<<<<< HEAD
 
-=======
->>>>>>> 4c44fc3 (Added Jest tests and fixed mock invoice structure)
 
 ---
 

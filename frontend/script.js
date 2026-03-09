@@ -14,10 +14,6 @@ const totalCell = document.getElementById("totalCell");
 const copyJsonBtn = document.getElementById("copyJsonBtn");
 const fileNameDisplay = document.getElementById("fileName");
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 4c44fc3 (Added Jest tests and fixed mock invoice structure)
 // Toggle theme
 themeToggle.onclick = () => {
   body.classList.toggle("dark");
@@ -143,8 +139,5 @@ extractBtn.onclick = async () => {
   };
 
   reader.readAsDataURL(file);
-<<<<<<< HEAD
+
 };
-=======
-};
->>>>>>> 4c44fc3 (Added Jest tests and fixed mock invoice structure)

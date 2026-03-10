@@ -1,3 +1,31 @@
+# dependencies
 node_modules/
-dist/
+
+# environment variables
 .env
+
+# logs
+logs
+*.log
+
+# build folders
+dist
+build
+coverage
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
+
+# npm / pnpm
+package-lock.json
+pnpm-lock.yaml
+
+# frontend build
+frontend/dist
+
+# backend build
+backend/dist

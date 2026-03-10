@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/jsonviewer.tsx","./src/components/tableview.tsx","./src/components/uploadzone.tsx","./src/test/components.test.tsx","./src/test/helpers.test.ts","./src/test/setup.ts","./src/types/invoice.ts","./src/utils/helpers.ts","./vite.config.ts"],"version":"5.9.3"}

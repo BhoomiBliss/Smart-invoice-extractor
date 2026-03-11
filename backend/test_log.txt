@@ -1,0 +1,27 @@
+
+> smart-invoice-extractor@1.0.0 test
+> cross-env NODE_ENV=test jest
+
+FAIL tests/invoice.test.ts
+  ● Test suite failed to run
+
+    [96mtests/invoice.test.ts[0m:[93m1[0m:[93m21[0m - [91merror[0m[90m TS7016: [0mCould not find a declaration file for module 'supertest'. 'C:/Users/bhoom/OneDrive/Documents/8th sem/Project/Smart-invoice-extractor/backend/node_modules/supertest/index.js' implicitly has an 'any' type.
+      Try `npm i --save-dev @types/supertest` if it exists or add a new declaration (.d.ts) file containing `declare module 'supertest';`
+
+    [7m1[0m import request from "supertest";
+    [7m [0m [91m                    ~~~~~~~~~~~[0m
+
+FAIL tests/mock-ai.test.ts
+  ● Test suite failed to run
+
+    [96mtests/mock-ai.test.ts[0m:[93m1[0m:[93m21[0m - [91merror[0m[90m TS7016: [0mCould not find a declaration file for module 'supertest'. 'C:/Users/bhoom/OneDrive/Documents/8th sem/Project/Smart-invoice-extractor/backend/node_modules/supertest/index.js' implicitly has an 'any' type.
+      Try `npm i --save-dev @types/supertest` if it exists or add a new declaration (.d.ts) file containing `declare module 'supertest';`
+
+    [7m1[0m import request from "supertest";
+    [7m [0m [91m                    ~~~~~~~~~~~[0m
+
+Test Suites: 2 failed, 2 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        3.942 s
+Ran all test suites.

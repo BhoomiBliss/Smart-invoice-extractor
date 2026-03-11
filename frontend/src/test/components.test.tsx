@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import JSONViewer from "../components/JSONViewer";
 import UploadZone from "../components/UploadZone";
 
-const invoice = {
+const invoice: any = {
   invoice_number: "INV-1",
   items: [{ description: "Test", quantity: 1, unit_price: 5, total: 5 }]
 };

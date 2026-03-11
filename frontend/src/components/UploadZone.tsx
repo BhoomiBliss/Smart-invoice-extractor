@@ -35,7 +35,7 @@ export default function UploadZone({ onExtracted }: UploadZoneProps) {
     const base64Image = await toBase64(selectedFile);
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30000);
+    const timeout = setTimeout(() => controller.abort(), 120000);
 
     const response = await fetch("/extract-invoice", {
       method: "POST",

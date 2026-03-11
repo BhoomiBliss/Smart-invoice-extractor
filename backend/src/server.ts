@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 
 dotenv.config();
 
@@ -64,8 +65,11 @@ interface ExtractResponse {
   model_used?: string;
 }
 
-const PRIMARY_MODEL =
-  process.env.OPENROUTER_MODEL || "google/gemma-3-27b-it:free";
+const PRIMARY_MODEL = process.env.PRIMARY_MODEL || "gemini-3.1-flash-lite-preview";
+const SECONDARY_MODEL = process.env.SECONDARY_MODEL || "qwen/qwen-2.5-vl-72b-instruct";
+const TERTIARY_MODEL = process.env.TERTIARY_MODEL || "meta-llama/llama-3.2-11b-vision-instruct";
+
+const googleai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY || "missing" });
 
 function sanitizeString(value: unknown, fallback = "-"): string {
   if (value === undefined || value === null) return fallback;
@@ -205,7 +209,51 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function callInvoiceModelOnce(
+async function callGoogleModelOnce(
+  model: string,
+  base64Image: string,
+  systemPrompt: string,
+  userPrompt: string
+): Promise<string> {
+  console.log(`Calling Google AI native with model: ${model}`);
+  
+  // Clean base64 header if present, GenAI needs raw base64 string
+  let rawBase64 = base64Image.trim();
+  if (rawBase64.startsWith("data:")) {
+    rawBase64 = rawBase64.split(",")[1];
+  }
+
+  const response = await googleai.models.generateContent({
+    model,
+    contents: [
+      {
+         role: "user",
+         parts: [
+           { text: systemPrompt + "\n\n" + userPrompt },
+           {
+              inlineData: {
+                 data: rawBase64,
+                 mimeType: "image/jpeg" // Fallback broad mime
+              }
+           }
+         ]
+      }
+    ],
+    config: {
+      temperature: 0,
+    }
+  });
+
+  const content = response.text;
+  const normalized = normalizeAIContent(content);
+
+  if (!normalized) {
+    throw new Error("Google model returned empty content.");
+  }
+  return normalized;
+}
+
+async function callOpenRouterModelOnce(
   model: string,
   imageUrl: string,
   systemPrompt: string,
@@ -234,21 +282,13 @@ async function callInvoiceModelOnce(
     ],
   });
 
-  console.log("===== OPENROUTER RAW RESPONSE =====");
-  console.dir(response, { depth: 8 });
-
   const choice = response.choices?.[0];
-  if (!choice) {
-    throw new Error("No choices returned by model.");
-  }
+  if (!choice) throw new Error("No choices returned by model.");
 
   const content = choice.message?.content;
   const normalized = normalizeAIContent(content);
 
-  if (!normalized) {
-    throw new Error("Model returned empty content.");
-  }
-
+  if (!normalized) throw new Error("Model returned empty content.");
   return normalized;
 }
 
@@ -264,12 +304,12 @@ async function callInvoiceModelWithRetry(
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       console.log(`Attempt ${attempt}/${maxAttempts} with model ${model}`);
-      return await callInvoiceModelOnce(
-        model,
-        imageUrl,
-        systemPrompt,
-        userPrompt
-      );
+      
+      if (model.includes("gemini")) {
+         return await callGoogleModelOnce(model, imageUrl, systemPrompt, userPrompt);
+      } else {
+         return await callOpenRouterModelOnce(model, imageUrl, systemPrompt, userPrompt);
+      }
     } catch (err: any) {
       lastError = err;
       const message = err?.message || "Unknown error";
@@ -401,45 +441,99 @@ Extract these fields from the invoice image and return exactly this JSON shape:
 }
 `.trim();
 
-      let rawText = "";
-      let parsed: InvoiceData | null = null;
+      let primaryData: InvoiceData | null = null;
+      let secondaryData: InvoiceData | null = null;
+      let tertiaryData: InvoiceData | null = null;
+      let rawTextPrimary = "";
 
       try {
-        rawText = await callInvoiceModelWithRetry(
-          PRIMARY_MODEL,
-          imageUrl,
-          systemPrompt,
-          userPrompt,
-          3
-        );
+        const [primaryRes, secondaryRes, tertiaryRes] = await Promise.allSettled([
+          callInvoiceModelWithRetry(PRIMARY_MODEL, base64Image, systemPrompt, userPrompt, 2),
+          callInvoiceModelWithRetry(SECONDARY_MODEL, imageUrl, systemPrompt, userPrompt, 2),
+          callInvoiceModelWithRetry(TERTIARY_MODEL, imageUrl, systemPrompt, userPrompt, 2)
+        ]);
+
+        if (primaryRes.status === "fulfilled") {
+          rawTextPrimary = primaryRes.value;
+          primaryData = extractJSON(primaryRes.value);
+        } else {
+          console.error("Primary Google Gemini Model Failed:", primaryRes.reason);
+        }
+        
+        if (secondaryRes.status === "fulfilled") {
+          secondaryData = extractJSON(secondaryRes.value);
+        }
+        if (tertiaryRes.status === "fulfilled") {
+          tertiaryData = extractJSON(tertiaryRes.value);
+        }
+
       } catch (err: any) {
-        console.error("Model call failed:", err);
-        return res.status(500).json({
-          success: false,
-          error: "Invoice extraction failed",
-          details: err?.message || "Model call failed",
-          model_used: PRIMARY_MODEL,
-        });
+        console.error("Consensus pipeline failed:", err);
       }
 
-      console.log(`AI RAW RESPONSE (${rawText.length} chars):`);
-      console.log(rawText || "[EMPTY RESPONSE]");
+      let parsed = primaryData;
+      let modelUsed = PRIMARY_MODEL;
+      let consensusDisagreements: string[] = [];
 
-      parsed = extractJSON(rawText);
+      if (primaryData && secondaryData) {
+        const totalMismatch = primaryData.total !== secondaryData.total;
+        const dateMismatch = primaryData.date !== secondaryData.date;
+        const vendorMismatch = primaryData.vendor !== secondaryData.vendor;
+
+        if (totalMismatch || dateMismatch || vendorMismatch) {
+          if (totalMismatch) consensusDisagreements.push(`Total Amount (${primaryData.total} vs ${secondaryData.total})`);
+          if (dateMismatch) consensusDisagreements.push(`Date (${primaryData.date} vs ${secondaryData.date})`);
+          if (vendorMismatch) consensusDisagreements.push(`Vendor (${primaryData.vendor} vs ${secondaryData.vendor})`);
+          
+          console.log(`Discrepancy found! Gemini vs Qwen conflicts: ${consensusDisagreements.join(", ")}`);
+          
+          if (tertiaryData) {
+            console.log(`Attempting Llama validation. Tertiary Total: ${tertiaryData.total}, Date: ${tertiaryData.date}`);
+            // Tiebreaker validation
+            let secondaryScore = 0;
+            let primaryScore = 0;
+            
+            if (tertiaryData.total === secondaryData.total) secondaryScore++;
+            if (tertiaryData.total === primaryData.total) primaryScore++;
+            if (tertiaryData.date === secondaryData.date) secondaryScore++;
+            if (tertiaryData.date === primaryData.date) primaryScore++;
+            
+            if (secondaryScore > primaryScore) {
+               parsed = secondaryData;
+               modelUsed = SECONDARY_MODEL + " (Consensus Tie-Breaker Applied)";
+            } else if (primaryScore > secondaryScore) {
+               parsed = primaryData;
+               modelUsed = PRIMARY_MODEL + " (Consensus Correctness Verified)";
+            } else {
+               parsed = tertiaryData;
+               modelUsed = TERTIARY_MODEL + " (Consensus Validation: Trusting Tertiary)";
+            }
+          } else {
+             modelUsed = PRIMARY_MODEL + " (Warning: Validation Model Offline, Defaults Chosen)";
+          }
+        }
+      } else if (!primaryData && secondaryData) {
+        parsed = secondaryData;
+        modelUsed = SECONDARY_MODEL + " (Fallback)";
+      } else if (!primaryData && !secondaryData && tertiaryData) {
+        parsed = tertiaryData;
+        modelUsed = TERTIARY_MODEL + " (Fallback)";
+      }
 
       if (!parsed) {
-        console.error("Invalid AI output:", rawText);
-
         return res.status(500).json({
           success: false,
-          error: "AI did not return valid JSON",
-          details: rawText || "Empty model response",
-          raw_output:
-            rawText.length > 1000 ? `${rawText.slice(0, 1000)}...` : rawText,
-          model_used: PRIMARY_MODEL,
+          error: "AI consensus pipeline failed to return valid JSON",
+          details: rawTextPrimary || "Empty model response",
+          raw_output: rawTextPrimary.length > 1000 ? `${rawTextPrimary.slice(0, 1000)}...` : rawTextPrimary,
+          model_used: "Pipeline Failed",
         });
       }
 
+      // Append verification flags for UI layer
+      (parsed as any).consensus_flags = consensusDisagreements.length > 0 ? consensusDisagreements : undefined;
+
+      // Re-calculate math to determine validation badge state
       const calculatedTotal =
         sanitizeNumber(parsed.subtotal) +
         sanitizeNumber(parsed.tax) +
@@ -450,13 +544,13 @@ Extract these fields from the invoice image and return exactly this JSON shape:
       parsed.total_mismatch =
         Math.abs(calculatedTotal - sanitizeNumber(parsed.total)) > 0.01;
 
-      console.log("Extraction successful with model:", PRIMARY_MODEL);
+      console.log("Extraction successful with model:", modelUsed);
 
       return res.json({
         success: true,
         data: parsed,
         table: parsed.items,
-        model_used: PRIMARY_MODEL,
+        model_used: modelUsed,
       });
     } catch (err: any) {
       console.error("Full server error:");

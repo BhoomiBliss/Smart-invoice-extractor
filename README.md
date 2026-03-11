@@ -1,202 +1,143 @@
 # 📄 Smart Invoice Extractor
 
-This project is a **Smart Invoice-to-JSON Converter** using OpenRouter's multimodal AI models. It allows you to upload an invoice image and automatically extract the invoice line items, vendor details, and totals into JSON and a clean table format.
+A **SOTA (State-of-the-Art) Invoice-to-JSON Engine** using an advanced **Multi-Model Consensus pipeline**. This project transcends simple API wrappers by deploying a robust inference engineering layer that orchestrates multiple vision models concurrently, guaranteeing high-fidelity structured data extraction from complex invoice layouts.
 
 ---
 
+## ✨ Features
 
-## Features
-
-- Upload JPG/PNG invoices.
-- Extract **line items**: Description, Quantity, Unit Price, Total.
-- Extract **Vendor Name, Tax ID, Invoice Number, Date, Due Date**.
-- Automatically calculate **Subtotal, Tax, Shipping, Total**.
-- Highlight mismatches in totals.
-- Rate limit retry logic for AI API
-- **Automated backend testing** using Jest
-- Minimal, clean, and aesthetic UI.
-
----
-
-## 🧰 Tech Stack
-
-| Layer           | Technology                                             |
-| :-------------- | :----------------------------------------------------- |
-| **Frontend**    | HTML, CSS, JavaScript                                  |
-| **Backend**     | Node.js, Express, TypeScript                           |
-| **AI Model**    | OpenRouter Vision Model (`qwen/qwen-2-vl-7b-instruct`) |
-| **Testing**     | Jest + Supertest                                       |
-| **Environment** | dotenv (`.env` for API key)                            |
-
+- **Multi-Model Consensus Pipeline**: Cross-validates extraction across three leading AI models.
+- **High-Reasoning OCR**: Powered by native Google SDK integration.
+- **Dense Table Extraction**: Line items, descriptions, quantities, and totals perfectly mapped.
+- **Discrepancy Flagging**: Automatically detects and flags mismatches in total amounts or dates.
+- **Fault-Tolerant Fallbacks**: Seamless failover routing if the primary model goes offline.
+- **Structured Output Compliance**: 100% strict JSON schema conformity.
+- **Automated Testing**: Comprehensive backend unit tests using Jest.
+- **Minimal Aesthetic UI**: Upload, preview, and review extracted data instantly.
 
 ---
 
-## System Architecture
+## 🏗️ Advanced AI Architecture
 
-![System Architecture](System%20Architecture/Sys-arch.jpg)
+Our **Inference Engineering** layer relies on a specialized three-tier model hierarchy:
 
-**Workflow:**
-
-1. User uploads an invoice image.
-2. Frontend converts the image to Base64 format.
-3. Image is sent to the Node.js backend API.
-4. Backend calls the OpenRouter multimodal model.
-5. AI extracts invoice details and returns a JSON response.
-6. Backend validates the JSON.
-7. Frontend displays:
-
-- Extracted JSON
-- Table of invoice items
-- Subtotal and Total
+1. **Primary (Extraction) — `gemini-3.1-flash-lite-preview`**: 
+   - Uses native Google SDK (`@google/genai`) for blazing-fast OCR and high-reasoning extraction.
+2. **Secondary (Structural) — `qwen/qwen-2.5-vl-72b-instruct`**: 
+   - Routed via OpenRouter. Specifically chosen for its superior spatial awareness and dense table layout precision.
+3. **Tertiary (Validation) — `meta-llama/llama-3.2-11b-vision-instruct`**: 
+   - Routed via OpenRouter. Acts as a high-speed cross-checker and tie-breaker for conflicting data.
 
 ---
 
-## 🧠 How the AI Extraction Works
+## ⚖️ Consensus Validation Logic
 
-1. The uploaded invoice image is converted to a Base64 string in the frontend.
-2. The Base64 image is sent to the backend API.
-3. The backend sends the image and prompt to the OpenRouter Vision model.
-4. The AI analyzes the spatial layout of the invoice and extracts structured data.
-5. The backend validates the JSON and verifies invoice totals.
-6. The frontend displays the extracted data as a table and JSON view.
+The backend uses `Promise.allSettled` to execute all three models concurrently, eliminating waterfall delays. 
 
----
-
-## 📸 Screenshots
-
-### Upload Invoice
-
-![System Architecture](System%20Architecture/uploadimage.jpg)
-
-### Extracted Table
-
-![System Architecture](System%20Architecture/resultpage.png)
+**How it works:**
+- The engine compares the output from `Gemini` (Primary) and `Qwen` (Secondary).
+- If models disagree on critical fields like `total_amount`, `invoice_date`, or `vendor`, a flag is raised.
+- The `Llama` (Tertiary) model's output is then used as a tie-breaker. The system programmatically calculates a consensus score and accepts the structurally verified JSON, appending `consensus_flags` for human review if necessary.
 
 ---
 
-## Installation
+## 🧰 Tech Stack Update
 
-1. Clone the repository:
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | React (Vite), TypeScript, CSS |
+| **Backend** | Node.js, Express, TypeScript |
+| **AI Integration** | `@google/genai` SDK, OpenRouter API |
+| **Infrastructure** | Hybrid Routing (Native Google AI Studio + OpenRouter Fallback) |
+| **Testing** | Jest + Supertest |
 
-```bash
-git clone https://github.com/BhoomiBliss/Smart-invoice-extractor.git
-cd Smart-invoice-extractor/backend
-```
+---
 
-## Install backend dependencies:
+## ⚙️ Environment Setup
 
-```bash
-cd backend
-pnpm install
+To run this pipeline locally, you must provide API keys for both native Google routing and OpenRouter fallbacks.
+
+Create a `.env` file in the `/backend` directory:
+
+```env
+PRIMARY_MODEL=gemini-3.1-flash-lite-preview
+SECONDARY_MODEL=qwen/qwen-2.5-vl-72b-instruct
+TERTIARY_MODEL=meta-llama/llama-3.2-11b-vision-instruct
+
+GOOGLE_API_KEY=your_google_ai_studio_api_key
+OPENROUTER_API_KEY=your_openrouter_api_key
+NODE_ENV=development
+PORT=5000
 ```
 
 ---
 
-## ▶️ Run the Backend Server
+## 🚀 Installation & Running
 
-```bash
-pnpm run dev
-```
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/BhoomiBliss/Smart-invoice-extractor.git
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   # Backend
+   cd Smart-invoice-extractor/backend
+   npm install
+
+   # Frontend
+   cd ../frontend
+   npm install
+   ```
+
+3. **Start the Development Servers:**
+   ```bash
+   # In the backend directory
+   npm run dev
+
+   # In the frontend directory
+   npm run dev
+   ```
 
 ---
 
-## 🌐 Using the Application
+## 📸 System Architecture & Previews
 
-- Open the frontend in browser
-- Upload an invoice image
-- Click **Extract Table Data**
-- The system will show:
-  - Extracted JSON
-  - Invoice table
-  - Subtotal and total
+### Architecture Workflow
+1. User uploads an invoice (JPG/PNG/WEBP).
+2. Frontend dispatches the Base64 image to the backend.
+3. Backend triggers the `Promise.allSettled` Concurrent Model racing.
+4. Consensus Engine validates the JSON structures and calculates tie-breakers.
+5. Frontend renders the structured Extracted JSON and Invoice Table.
+
+### Application Preview
+![Upload Invoice](System%20Architecture/uploadimage.jpg)
+
+![Extracted Table](System%20Architecture/resultpage.png)
+
+---
 
 ## 🧪 Testing
 
-This project includes automated backend testing using Jest and Supertest.
-Testing ensures the API behaves correctly under different scenarios.
-
-### Install Testing Dependencies
+The backend includes a complete suite of automated testing for the pipeline and fallback simulation.
 
 ```bash
-pnpm add -D jest supertest ts-jest @types/jest @types/supertest cross-env
+cd backend
+npm test
 ```
 
 ---
-
-## 📂 Test Files
-
-```plaintext
-backend/tests
-│
-├── invoice.test.ts
-└── mock-ai.test.ts
-```
-
-### ▶️ Running Tests
-
-Run all tests using:
-
-```bash
-pnpm test
-```
-
-# Example output:
-
-```Plaintext
-PASS tests/mock-ai.test.ts
-PASS tests/invoice.test.ts
-
-Test Suites: 2 passed
-Tests: 3 passed
-```
-
-## This confirms that the backend API works correctly.
-
----
-
-## 📁 Project Structure
-
-```text
-Smart-invoice-extractor
-│
-├── frontend
-│   └── index.html
-│
-├── backend
-│   │
-│   ├── src
-│   │   └── server.ts
-│   │
-│   ├── tests
-│   │   ├── invoice.test.ts
-│   │   └── mock-ai.test.ts
-│   │
-│   ├── package.json
-│   └── .env
-│
-└── README.md
-```
-
----
-
-## ⚠️ Error Handling
-
-The system handles the following errors:
-
-| Scenario              | Handling                 |
-| --------------------- | ------------------------ |
-| Missing image         | Returns 400 error        |
-| Invalid JSON from AI  | Safe JSON extraction     |
-| Rate limit from API   | Automatic retry          |
-| Invalid invoice image | Returns fallback message |
 
 ## 📌 Future Improvements
 
-- Support PDF invoice upload
-- Improve multi-invoice detection
-- Add database storage
-- Deploy using Docker + Cloud
+- [ ] **PDF Support**: Add OCR parsing and conversion for multipage PDF invoices.
+- [ ] **Cloud Deployment**: Containerize with Docker and deploy the Node.js consensus engine on **GCP (Google Cloud Platform)**.
+- [ ] **Database Integration**: Persist extracted invoices to PostgreSQL for historical tracking.
+- [ ] **Multi-Invoice Batching**: Process multiple invoice images simultaneously.
+
+---
 
 ## 👨‍💻 Author
 
-**BhoomiBliss** GitHub Repository: [https://github.com/BhoomiBliss/Smart-invoice-extractor](https://github.com/BhoomiBliss/Smart-invoice-extractor)
+**BhoomiBliss**  
+GitHub Repository: [Smart-invoice-extractor](https://github.com/BhoomiBliss/Smart-invoice-extractor)

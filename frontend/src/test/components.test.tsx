@@ -6,14 +6,19 @@ import UploadZone from "../components/UploadZone";
 
 const invoice: any = {
   invoice_number: "INV-1",
-  items: [{ description: "Test", quantity: 1, unit_price: 5, total: 5 }]
+  items: [{ description: "Test", quantity: 1, unit_price: 5, total: 5 }],
 };
 
 describe("components", () => {
-  it("renders upload and disabled extract initially", () => {
-    render(<UploadZone onExtracted={vi.fn()} />);
-    expect(screen.getByText("Upload Invoice")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /extract data/i })).toBeDisabled();
+  it("renders upload zone correctly", () => {
+    render(
+      <UploadZone
+        onFileSelect={vi.fn()}
+        selectedFile={null}
+        isExtracting={false}
+      />,
+    );
+    expect(screen.getByText(/drop your invoice/i)).toBeInTheDocument();
   });
 
   it("copies json text", async () => {
@@ -21,7 +26,7 @@ describe("components", () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", {
       value: { writeText },
-      configurable: true
+      configurable: true,
     });
 
     render(<JSONViewer invoice={invoice} />);

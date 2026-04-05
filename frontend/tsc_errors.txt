@@ -1,0 +1,4 @@
+﻿src/components/HistorySidebar.tsx(56,34): error TS2339: Property 'vendor_name' does not exist on type 'InvoiceData'.
+src/components/HistorySidebar.tsx(58,28): error TS2339: Property 'total_amount' does not exist on type 'InvoiceData'.
+src/components/HistorySidebar.tsx(59,42): error TS2339: Property 'total_amount' does not exist on type 'InvoiceData'.
+src/components/HistorySidebar.tsx(64,26): error TS2339: Property 'invoice_date' does not exist on type 'InvoiceData'.

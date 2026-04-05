@@ -1,213 +1,171 @@
-import { useMemo, useState } from "react";
-import type { InvoiceData } from "../types/invoice";
-import { toBase64 } from "../utils/helpers";
+import { useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { UploadCloud, FileText, CheckCircle2, Sparkles } from "lucide-react";
 
-type UploadZoneProps = {
-  onExtracted: (invoice: InvoiceData) => void;
-};
+interface UploadZoneProps {
+  onFileSelect: (file: File | null) => void;
+  selectedFile: File | null;
+  isExtracting: boolean;
+}
 
-export default function UploadZone({ onExtracted }: UploadZoneProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>("");
-  const [dragOver, setDragOver] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>("");
+export default function UploadZone({
+  onFileSelect,
+  selectedFile,
+  isExtracting,
+}: UploadZoneProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const fileLabel = useMemo(() => {
-    if (!selectedFile) return "No file selected";
-    return `${selectedFile.name} � ${(selectedFile.size / 1024).toFixed(0)} KB`;
-  }, [selectedFile]);
-
-  const pickFile = (file: File | null) => {
-    if (!file || !file.type.startsWith("image/")) return;
-    setSelectedFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
-    setError("");
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isExtracting) setIsDragging(true);
   };
 
-  const handleExtract = async () => {
-  if (!selectedFile) return;
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
 
-  setLoading(true);
-  setError("");
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
 
-  try {
-    const base64Image = await toBase64(selectedFile);
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 120000);
-
-    const response = await fetch("/extract-invoice", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ base64Image }),
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeout);
-
-    const payload = await response.json();
-
-    if (!response.ok) {
-      throw new Error(payload.error || payload.details || "Backend request failed");
+    if (!isExtracting && e.dataTransfer.files?.[0]) {
+      onFileSelect(e.dataTransfer.files[0]);
     }
-
-    if (!payload.success || !payload.data) {
-      throw new Error(payload.error || "No invoice data returned");
-    }
-
-    onExtracted(payload.data);
-  } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Unexpected extraction error";
-    setError(message);
-    console.error("Frontend extraction error:", err);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
-    <>
-      <div className="upload-row">
-        <div>
-          <div className="section-label">
-            <div className="step-badge">1</div>
-            <h2>Upload Invoice</h2>
-          </div>
+    <div className="w-full max-w-2xl relative" style={{ zIndex: 10 }}>
+      <input
+        ref={inputRef}
+        type="file"
+        className="hidden"
+        accept=".pdf,image/*"
+        onChange={(e) => e.target.files?.[0] && onFileSelect(e.target.files[0])}
+      />
 
-          <label
-            id="uploadArea"
-            className={`${selectedFile ? "has-file" : ""} ${dragOver ? "dragover" : ""}`.trim()}
-            onDragOver={(event) => {
-              event.preventDefault();
-              setDragOver(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              setDragOver(false);
-            }}
-            onDrop={(event) => {
-              event.preventDefault();
-              setDragOver(false);
-              pickFile(event.dataTransfer.files[0] ?? null);
-            }}
-          >
-            <input
-              id="fileInput"
-              type="file"
-              accept="image/*"
-              onChange={(event) => pickFile(event.target.files?.[0] ?? null)}
-            />
+      <motion.div
+        layout
+        onClick={() => !isExtracting && inputRef.current?.click()}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        animate={{
+          y: [0, -8, 0],
+          borderColor:
+            isDragging || selectedFile
+              ? "#3b82f6"
+              : ["#e5e7eb", "#3b82f633", "#e5e7eb"],
+        }}
+        transition={{
+          y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+          borderColor: { duration: 3, repeat: Infinity, ease: "linear" },
+        }}
+        className={`relative w-full h-[320px] rounded-[3rem] border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer overflow-hidden shadow-2xl ${
+          isDragging
+            ? "bg-blue-500/10 scale-[1.02] shadow-blue-500/20"
+            : "dark:border-white/10 bg-white/60 dark:bg-[#0b1220]/60 hover:bg-white dark:hover:bg-[#0b1220] shadow-black/5"
+        } ${selectedFile ? "bg-blue-500/5 ring-8 ring-blue-500/5" : ""}`}
+      >
+        {/* Animated Background Glow */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 opacity-50" />
 
-            {!selectedFile && (
-              <div className="upload-prompt">
-                <div className="upload-icon-wrap">
-                  <svg
-                    viewBox="0 0 64 64"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M48 38C52.4 38 56 34.4 56 30s-3.6-8-8-8c-.7 0-1.3.1-2 .3C44.4 17.5 40 14 34.5 14 27.6 14 22 19.6 22 26.5c0 .2 0 .3.01.5-.3-.1-.7-.1-1-.1-3.9 0-7 3.1-7 7s3.1 7 7 7H48"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M32 52V34m0 0-6 6m6-6 6 6"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-                <div className="upload-text">
-                  <h3>
-                    {dragOver
-                      ? "Drop your invoice here"
-                      : "Drag & drop your invoice"}
-                  </h3>
-                  <p>
-                    or <span>browse to upload</span>
-                  </p>
-                </div>
-                <div className="upload-hint">JPG � PNG � WEBP � up to 10MB</div>
-              </div>
-            )}
-
-            {selectedFile && (
-              <div className="preview-wrap" style={{ display: "flex" }}>
-                <div className="preview-img-box">
-                  <img src={previewUrl} alt="Uploaded invoice" />
-                  <div className="preview-badges">
-                    <span className="preview-name">{selectedFile.name}</span>
-                    <span className="preview-size">
-                      {(selectedFile.size / 1024).toFixed(0)} KB
-                    </span>
-                  </div>
-                </div>
-                <p className="preview-replace">
-                  Click or drop to replace image
-                </p>
-              </div>
-            )}
-          </label>
-        </div>
-
-        <div className="extract-panel">
-          <div className="section-label">
-            <div className="step-badge">2</div>
-            <h2>Extract</h2>
-          </div>
-
-          <button
-            id="extractBtn"
-            disabled={!selectedFile || loading}
-            onClick={handleExtract}
-          >
-            <svg
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
+        <AnimatePresence mode="wait">
+          {!selectedFile ? (
+            <motion.div
+              key="idle"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
+              className="flex flex-col items-center gap-6 p-8 relative z-10"
             >
-              <path d="M2 4l6-2 6 2v7l-6 3-6-3V4z" strokeLinejoin="round" />
-              <path d="M8 2v10M2 4l6 3 6-3" strokeLinejoin="round" />
-            </svg>
-            {loading ? "Extracting..." : "Extract Data"}
-          </button>
-          <p className="extract-hint">
-            {selectedFile ? "Click to analyze with AI" : "Select a file first"}
-          </p>
-          <p className="extract-file">{fileLabel}</p>
-        </div>
-      </div>
+              <motion.div
+                animate={{
+                  boxShadow: [
+                    "0 0 0px rgba(59,130,246,0)",
+                    "0 0 20px rgba(59,130,246,0.2)",
+                    "0 0 0px rgba(59,130,246,0)",
+                  ],
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="w-24 h-24 rounded-[2rem] bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20"
+              >
+                <UploadCloud size={48} strokeWidth={1.2} />
+              </motion.div>
+              <div className="text-center">
+                <h3 className="text-3xl font-black dark:text-white text-gray-900 mb-3 tracking-tight">
+                  Drop your invoice
+                </h3>
+                <p className="text-[16px] text-gray-500 font-bold tracking-tight opacity-80">
+                  Securely process PDF, JPG, or PNG
+                </p>
+                <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-500/5 py-1 px-3 rounded-full border border-blue-500/10">
+                  <Sparkles size={10} /> Neural Ready
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="active"
+              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              className="flex flex-col items-center gap-8 relative z-10"
+            >
+              <div className="relative group">
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.4, 0.2] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="absolute -inset-8 bg-blue-500/30 blur-3xl rounded-full"
+                />
+                <div className="relative z-10 w-28 h-28 bg-white dark:bg-[#060b14] rounded-[2rem] flex items-center justify-center shadow-2xl border border-blue-500/20">
+                  <FileText size={56} className="text-blue-500" />
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -right-2 -bottom-2 bg-emerald-500 rounded-full p-2 border-4 border-white dark:border-[#060b14] text-white shadow-xl"
+                  >
+                    <CheckCircle2 size={24} />
+                  </motion.div>
+                </div>
+              </div>
+              <div className="text-center px-10">
+                <p className="text-xl font-black dark:text-white text-gray-900 tracking-tight truncate max-w-sm">
+                  {selectedFile.name}
+                </p>
+                <div className="mt-2 text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+                  {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB • Ready
+                  for ingestion
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onFileSelect(null);
+                  }}
+                  className="mt-8 px-8 py-2.5 rounded-full text-[11px] font-black uppercase text-red-500 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 tracking-[0.2em] transition-all hover:scale-105 active:scale-95"
+                >
+                  Change Document
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {loading && (
-        <div id="loading" className="visible">
-          <div className="dots">
-            <div className="dot"></div>
-            <div className="dot"></div>
-            <div className="dot"></div>
-          </div>
-          <span>AI is analyzing your invoice...</span>
-        </div>
-      )}
-
-      {error && (
-        <div id="errorBox" className="visible">
-          <svg viewBox="0 0 16 16" fill="currentColor">
-            <path d="M8 15A7 7 0 118 1a7 7 0 010 14zm0 1A8 8 0 108 0a8 8 0 000 16z" />
-            <path d="M7.002 11a1 1 0 112 0 1 1 0 01-2 0zM7.1 4.995a.905.905 0 111.8 0l-.35 3.507a.552.552 0 01-1.1 0L7.1 4.995z" />
-          </svg>
-          <div>
-            <div id="errorTitle">Extraction Failed</div>
-            <div id="errorMsg">{error}</div>
-          </div>
-        </div>
-      )}
-    </>
+        {isDragging && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute inset-0 bg-blue-500/10 backdrop-blur-[4px] pointer-events-none flex items-center justify-center border-4 border-blue-500 rounded-[3rem]"
+          >
+            <div className="text-blue-500 font-black text-2xl uppercase tracking-widest animate-bounce">
+              Release to Analyze
+            </div>
+          </motion.div>
+        )}
+      </motion.div>
+    </div>
   );
 }

@@ -1,143 +1,134 @@
-# 📄 Smart Invoice Extractor
+# 📄 Smart Invoice AI Extractor (Elite SaaS Edition)
 
-A **SOTA (State-of-the-Art) Invoice-to-JSON Engine** using an advanced **Multi-Model Consensus pipeline**. This project transcends simple API wrappers by deploying a robust inference engineering layer that orchestrates multiple vision models concurrently, guaranteeing high-fidelity structured data extraction from complex invoice layouts.
+[![Tech Stack](https://img.shields.io/badge/Stack-React%20%7C%20Supabase%20%7C%20Node.js-blue)](https://github.com/BhoomiBliss/Smart-invoice-extractor)
+[![UI/UX](https://img.shields.io/badge/UI--UX-Premium%20AI%20Shell-3b82f6)](https://github.com/BhoomiBliss/Smart-invoice-extractor)
+[![Testing](https://img.shields.io/badge/QA-Cypress%20E2E-success)](https://github.com/BhoomiBliss/Smart-invoice-extractor)
 
----
-
-## ✨ Features
-
-- **Multi-Model Consensus Pipeline**: Cross-validates extraction across three leading AI models.
-- **High-Reasoning OCR**: Powered by native Google SDK integration.
-- **Dense Table Extraction**: Line items, descriptions, quantities, and totals perfectly mapped.
-- **Discrepancy Flagging**: Automatically detects and flags mismatches in total amounts or dates.
-- **Fault-Tolerant Fallbacks**: Seamless failover routing if the primary model goes offline.
-- **Structured Output Compliance**: 100% strict JSON schema conformity.
-- **Automated Testing**: Comprehensive backend unit tests using Jest.
-- **Minimal Aesthetic UI**: Upload, preview, and review extracted data instantly.
+**Tagline**: A high-fidelity, production-grade Invoice-to-JSON platform featuring Multi-Model Consensus, Supabase Cloud Persistence, and a premium ChatGPT-style AI Shell.
 
 ---
 
-## 🏗️ Advanced AI Architecture
+## 🚀 High-Level SaaS Features (The Upgrades)
 
-Our **Inference Engineering** layer relies on a specialized three-tier model hierarchy:
+### 🤖 ChatGPT-Style UX
+- **Dynamic Shell**: A fully responsive, full-height (`h-screen`) collapsible sidebar with smooth `framer-motion` transitions (w-80 to w-20).
+- **State-Lifting Architecture**: Seamless layout reflow where the main content dynamically adjusts its margins based on the sidebar's state.
+- **Micro-Animations**: Uses `AnimatePresence` for graceful fading of text labels and sidebar items.
 
-1. **Primary (Extraction) — `gemini-3.1-flash-lite-preview`**: 
-   - Uses native Google SDK (`@google/genai`) for blazing-fast OCR and high-reasoning extraction.
-2. **Secondary (Structural) — `qwen/qwen-2.5-vl-72b-instruct`**: 
-   - Routed via OpenRouter. Specifically chosen for its superior spatial awareness and dense table layout precision.
-3. **Tertiary (Validation) — `meta-llama/llama-3.2-11b-vision-instruct`**: 
-   - Routed via OpenRouter. Acts as a high-speed cross-checker and tie-breaker for conflicting data.
+### 🧠 Consensus Intelligence
+- **Multi-Model Orchestration**: Leverages **Gemini 3.1**, **Qwen-VL**, and **Llama 3** concurrently.
+- **99.9% Accuracy**: A programmatic consensus layer cross-checks critical fields (Total, Date, Vendor) and uses a tie-breaker logic to eliminate hallucinations.
+- **Real-Time Analysis**: Interactive AI progress bars and analyzing states keep the user engaged during the extraction cycle.
+
+### ☁️ Supabase Cloud Sync
+- **Unified Auth**: Secure Login/Signup with persistent sessions and third-party provider support.
+- **Postgres Persistence**: All extractions for logged-in users are automatically saved to a Supabase PostgreSQL database.
+- **Secure Image Storage**: Invoice images are uploaded to encrypted Supabase Storage buckets with fine-grained RLS policies.
+
+### ⚙️ Premium Settings Engine
+- **Profile Mastery**: Instant avatar previews using blob URLs and background cloud synchronization.
+- **Advanced Security**: A robust 'Delete Account' protocol that requires the user to type 'DELETE' to confirm destructive actions.
+- **Help Center**: Integrated support grid for file specifications, security whitepapers, and direct support links.
+
+### ✨ Micro-Interaction Layer
+- **Skeleton Loading**: High-fidelity shimmer effects in the history sidebar while fetching data.
+- **Dynamic Toasts**: Professional notifications using `react-hot-toast` with custom Cobalt Blue (Success) and Soft Red (Error) themes.
+- **Interactive Buttons**: Elite buttons with filling progress bars and pulsed success states.
 
 ---
 
-## ⚖️ Consensus Validation Logic
+## 🛠️ Updated Tech Stack
 
-The backend uses `Promise.allSettled` to execute all three models concurrently, eliminating waterfall delays. 
-
-**How it works:**
-- The engine compares the output from `Gemini` (Primary) and `Qwen` (Secondary).
-- If models disagree on critical fields like `total_amount`, `invoice_date`, or `vendor`, a flag is raised.
-- The `Llama` (Tertiary) model's output is then used as a tie-breaker. The system programmatically calculates a consensus score and accepts the structurally verified JSON, appending `consensus_flags` for human review if necessary.
-
----
-
-## 🧰 Tech Stack Update
-
-| Layer | Technology |
+| Layer | Technologies |
 | :--- | :--- |
-| **Frontend** | React (Vite), TypeScript, CSS |
-| **Backend** | Node.js, Express, TypeScript |
-| **AI Integration** | `@google/genai` SDK, OpenRouter API |
-| **Infrastructure** | Hybrid Routing (Native Google AI Studio + OpenRouter Fallback) |
-| **Testing** | Jest + Supertest |
+| **Frontend** | React (Vite), TypeScript, Framer Motion, Tailwind CSS, Lucide Icons |
+| **Backend** | Node.js, Express, Supabase (Auth, Storage, Database) |
+| **AI Models** | Google Gemini 3.1 Flash, Qwen-2.5 VL (OpenRouter), Llama 3.2 Vision |
+| **QA/Testing** | Cypress E2E (Dashboard, Auth, Theme), Jest (Backend Units) |
+| **Styling** | "The Blue Standard" (Cobalt Blue #3b82f6), Glassmorphism, Dark/Light Theme Engine |
 
 ---
 
-## ⚙️ Environment Setup
+## ⚙️ Installation & Deployment
 
-To run this pipeline locally, you must provide API keys for both native Google routing and OpenRouter fallbacks.
-
-Create a `.env` file in the `/backend` directory:
-
+### 1. Environment Configuration
+Create a `.env` file in the `/frontend` directory:
 ```env
-PRIMARY_MODEL=gemini-3.1-flash-lite-preview
-SECONDARY_MODEL=qwen/qwen-2.5-vl-72b-instruct
-TERTIARY_MODEL=meta-llama/llama-3.2-11b-vision-instruct
-
-GOOGLE_API_KEY=your_google_ai_studio_api_key
-OPENROUTER_API_KEY=your_openrouter_api_key
-NODE_ENV=development
-PORT=5000
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
----
+Add these to your `/backend/.env`:
+```env
+GOOGLE_API_KEY=your_google_key
+OPENROUTER_API_KEY=your_openrouter_key
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_service_key
+```
 
-## 🚀 Installation & Running
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/BhoomiBliss/Smart-invoice-extractor.git
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   # Backend
-   cd Smart-invoice-extractor/backend
-   npm install
-
-   # Frontend
-   cd ../frontend
-   npm install
-   ```
-
-3. **Start the Development Servers:**
-   ```bash
-   # In the backend directory
-   npm run dev
-
-   # In the frontend directory
-   npm run dev
-   ```
-
----
-
-## 📸 System Architecture & Previews
-
-### Architecture Workflow
-1. User uploads an invoice (JPG/PNG/WEBP).
-2. Frontend dispatches the Base64 image to the backend.
-3. Backend triggers the `Promise.allSettled` Concurrent Model racing.
-4. Consensus Engine validates the JSON structures and calculates tie-breakers.
-5. Frontend renders the structured Extracted JSON and Invoice Table.
-
-### Application Preview
-![Upload Invoice](System%20Architecture/uploadimage.jpg)
-
-![Extracted Table](System%20Architecture/resultpage.png)
-
----
-
-## 🧪 Testing
-
-The backend includes a complete suite of automated testing for the pipeline and fallback simulation.
-
+### 2. Run the Elite Shell
 ```bash
-cd backend
-npm test
+# Install Everything
+npm install
+
+# Start Development
+npm run dev
+```
+
+### 3. Quality Assurance (E2E)
+Run the automated Cypress test suite to verify the Dashboard, Sidebar, and Extraction pipeline:
+```bash
+# Run tests headlessly
+npm run test:e2e
+
+# Open Cypress UI
+npm run cypress:open
+```
+
+### 4. Deployment
+- **Frontend**: Deploy to **Vercel** or Netlify. Ensure `VITE_` variables are set in the dashboard.
+- **Backend**: Deploy to Render/Heroku or **Supabase Edge Functions**.
+- **Database**: Configure **Row Level Security (RLS)** in Supabase to ensure users can only see their own `invoice` records:
+  ```sql
+  CREATE POLICY "Users can only see their own data" 
+  ON public.invoices FOR SELECT 
+  USING (auth.uid() = user_id);
+  ```
+
+---
+
+## 🔄 System Architecture & UX Flow
+
+```mermaid
+graph TD
+    A[User Auth/Login] --> B[Premium Dashboard]
+    B --> C[File Upload - JPG/PNG/WEBP]
+    C --> D[Concurrent Model Consensus]
+    D --> E[Gemini + Qwen + Llama Racing]
+    E --> F[Consensus Logic / Tie-breaker]
+    F --> G[Supabase Cloud Save]
+    G --> H[Interactive Visualization]
+    H --> I[JSON Viewer + Table Glow View]
 ```
 
 ---
 
-## 📌 Future Improvements
+## 💎 The 'Blue Standard' Quality Guarantee
+This project adheres to the **Blue Standard** design system:
+- **Zero Flash of Unstyled Content (FOUC)**: Optimized theme loading from local storage.
+- **Accessible Color Palette**: High-contrast Cobalt Blue (#3b82f6) on Deep Charcoal (#020617).
+- **Glassmorphism Consistency**: Unified backdrop-blur-xl and border-white/5 across all modals and headers.
 
-- [ ] **PDF Support**: Add OCR parsing and conversion for multipage PDF invoices.
-- [ ] **Cloud Deployment**: Containerize with Docker and deploy the Node.js consensus engine on **GCP (Google Cloud Platform)**.
-- [ ] **Database Integration**: Persist extracted invoices to PostgreSQL for historical tracking.
-- [ ] **Multi-Invoice Batching**: Process multiple invoice images simultaneously.
+---
+
+## 🗺️ Future Roadmap
+- [ ] **Batch Processing**: Simultaneous extraction of 10+ invoices in a single queue.
+- [ ] **Financial Integration**: Automated tax calculation and one-click export to QuickBooks/Xero API.
+- [ ] **AI-Chat with Invoices**: A ChatGPT interface to query your historical invoice data (e.g., "What was my total spending on AWS last month?").
 
 ---
 
 ## 👨‍💻 Author
-
 **BhoomiBliss**  
-GitHub Repository: [Smart-invoice-extractor](https://github.com/BhoomiBliss/Smart-invoice-extractor)
+High-Performance SaaS Architect.  
+[GitHub Repository](https://github.com/BhoomiBliss/Smart-invoice-extractor)

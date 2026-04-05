@@ -1,0 +1,41 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: invoice-backend
+    restart: always
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - invoice-uploads:/app/uploads
+    networks:
+      - invoice-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+    container_name: invoice-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - backend
+    networks:
+      - invoice-network
+
+networks:
+  invoice-network:
+    driver: bridge
+
+volumes:
+  invoice-uploads:

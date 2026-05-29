@@ -164,7 +164,7 @@
     
     <!-- Route A -->
     <rect x="60" y="355" width="250" height="120" rx="10" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5" />
-    <text x="75" y="378" box-title font-size="12" fill="#1E40AF" font-weight="700">ROUTE A: Gemini 1.5 Flash</text>
+    <text x="75" y="378" class="box-title" font-size="12" fill="#1E40AF" font-weight="700">ROUTE A: Gemini 1.5 Flash</text>
     <text x="75" y="394" font-size="9.5" fill="#1E3A8A" font-weight="700">Primary Route · native JSON Mode</text>
     <text x="75" y="408" font-size="9" fill="#3B82F6">15s timeout guard · 3-key Pool rotation</text>
     <!-- Key status display -->
@@ -176,7 +176,7 @@
 
     <!-- Route B -->
     <rect x="355" y="355" width="250" height="120" rx="10" fill="#FAF5FF" stroke="#E9D5FF" stroke-width="1.5" />
-    <text x="370" y="378" box-title font-size="12" fill="#6B21A8" font-weight="700">ROUTE B: OpenRouter Vision</text>
+    <text x="370" y="378" class="box-title" font-size="12" fill="#6B21A8" font-weight="700">ROUTE B: OpenRouter Vision</text>
     <text x="370" y="394" font-size="9.5" fill="#5B21B6" font-weight="700">Backup Route · Qwen-2.5-VL Vision</text>
     <text x="370" y="408" font-size="9" fill="#8B5CF6">20s timeout guard · 2-key Pool rotation</text>
     <text x="370" y="423" font-size="9" fill="#4C1D95">Scrubs Markdown JSON fences defensively</text>
@@ -184,7 +184,7 @@
 
     <!-- Route C -->
     <rect x="650" y="355" width="250" height="120" rx="10" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1.5" />
-    <text x="665" y="378" box-title font-size="12" fill="#166534" font-weight="700">ROUTE C: Tesseract + Mistral</text>
+    <text x="665" y="378" class="box-title" font-size="12" fill="#166534" font-weight="700">ROUTE C: Tesseract + Mistral</text>
     <text x="665" y="394" font-size="9.5" fill="#14532D" font-weight="700">Last resort · Local air-gapped OCR</text>
     <text x="665" y="408" font-size="9" fill="#10B981">45s timeout guard · Sharp Image Pre-resize</text>
     <text x="665" y="422" font-size="8.5" fill="#64748B">Width cap 2000px · Grayscale · Normalize</text>

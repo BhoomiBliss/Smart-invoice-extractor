@@ -1,0 +1,27 @@
+{
+  "name": "@multi-agent-invoice/worker",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@multi-agent-invoice/database": "*",
+    "@multi-agent-invoice/shared": "*",
+    "bullmq": "^5.8.2",
+    "dotenv": "^16.4.5",
+    "ioredis": "^5.4.1",
+    "langfuse": "^3.38.20",
+    "openai": "^6.39.1",
+    "tesseract.js": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "tsx": "^4.10.5",
+    "typescript": "^5.4.5"
+  }
+}

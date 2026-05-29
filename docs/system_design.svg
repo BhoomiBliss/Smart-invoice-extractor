@@ -1,0 +1,225 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" width="100%" height="100%">
+  <defs>
+    <!-- Drop Shadow Filter for Sleek Glassmorphism -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0F172A" flood-opacity="0.06" />
+    </filter>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    
+    <!-- Linear Gradients for Connectors and Accents -->
+    <linearGradient id="blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+    <linearGradient id="green-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+    <linearGradient id="purple-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6" />
+      <stop offset="100%" stop-color="#6D28D9" />
+    </linearGradient>
+    
+    <!-- Custom Keyframe Animations inside SVG Stylesheet -->
+    <style>
+      .flow-line {
+        stroke-dasharray: 8, 8;
+        animation: flow 25s linear infinite;
+      }
+      .flow-line-reverse {
+        stroke-dasharray: 8, 8;
+        animation: flow-rev 25s linear infinite;
+      }
+      .pulse-node {
+        animation: pulse 3s ease-in-out infinite;
+      }
+      .pulse-slow {
+        animation: pulse 4s ease-in-out infinite alternate;
+      }
+      .signal-dot {
+        animation: travel 4s linear infinite;
+      }
+      .signal-dot-2 {
+        animation: travel 4s linear infinite;
+        animation-delay: 2s;
+      }
+      
+      @keyframes flow {
+        from { stroke-dashoffset: 500; }
+        to { stroke-dashoffset: 0; }
+      }
+      @keyframes flow-rev {
+        from { stroke-dashoffset: 0; }
+        to { stroke-dashoffset: 500; }
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); filter: drop-shadow(0 4px 6px rgba(15, 23, 42, 0.05)); }
+        50% { transform: scale(1.015); filter: drop-shadow(0 10px 15px rgba(29, 78, 216, 0.08)); }
+      }
+      @keyframes travel {
+        0% { stroke-dashoffset: 100%; }
+        100% { stroke-dashoffset: 0%; }
+      }
+      
+      text {
+        font-family: 'Arial', 'Outfit', 'Inter', -apple-system, sans-serif;
+      }
+      .title { font-weight: 800; fill: #0F2D4E; font-size: 20px; }
+      .subtitle { font-size: 11px; fill: #64748B; font-weight: 500; letter-spacing: 0.5px; }
+      .box-title { font-weight: 700; fill: #1E293B; font-size: 14px; }
+      .box-desc { fill: #475569; font-size: 11px; }
+      .badge { font-weight: 700; font-size: 9px; fill: #FFFFFF; }
+      .marker-label { font-size: 10px; font-weight: 700; fill: #64748B; }
+    </style>
+  </defs>
+
+  <rect width="960" height="560" rx="16" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.5" />
+  
+  <!-- ========================================== -->
+  <!-- 1. FRONTEND USER WORKSPACE                 -->
+  <!-- ========================================== -->
+  <g class="pulse-node" style="transform-origin: 160px 140px;">
+    <!-- Container Block -->
+    <rect x="40" y="50" width="240" height="180" rx="12" fill="#FFFFFF" stroke="#DBEAFE" stroke-width="1.5" filter="url(#shadow)" />
+    <!-- Header bar -->
+    <path d="M 40,62 a 12,12 0 0 1 12,-12 h 216 a 12,12 0 0 1 12,12 v 24 h -240 z" fill="#EFF6FF" />
+    <circle cx="60" cy="68" r="5" fill="#EF4444" />
+    <circle cx="74" cy="68" r="5" fill="#F59E0B" />
+    <circle cx="88" cy="68" r="5" fill="#10B981" />
+    <text x="110" y="72" class="box-title" font-size="12" fill="#1E3A8A">ZUSTAND VIEW LAYER</text>
+    
+    <!-- Inner content boxes -->
+    <rect x="55" y="100" width="100" height="55" rx="6" fill="#F1F5F9" stroke="#E2E8F0" />
+    <text x="65" y="118" font-size="10" font-weight="700" fill="#475569">Interactive Editor</text>
+    <text x="65" y="132" font-size="9" fill="#64748B">Table / JSON Workspace</text>
+    <text x="65" y="144" font-size="9" fill="#64748B">HITL Overrides</text>
+    
+    <rect x="165" y="100" width="100" height="55" rx="6" fill="#F1F5F9" stroke="#E2E8F0" />
+    <text x="172" y="118" font-size="10" font-weight="700" fill="#475569">Zustand Slices</text>
+    <text x="172" y="132" font-size="9" fill="#64748B">6-State Concurrency</text>
+    <text x="172" y="144" font-size="9" fill="#1D4ED8">CommandMutex</text>
+    
+    <!-- Guest alert badge -->
+    <rect x="55" y="170" width="210" height="42" rx="6" fill="#FFFBEB" stroke="#FDE68A" />
+    <text x="65" y="186" font-size="9.5" font-weight="700" fill="#B45309">⚠️ Guest Session Sandbox</text>
+    <text x="65" y="198" font-size="8.5" fill="#D97706">Redis IP Limit 3 uploads/day · skips DB</text>
+  </g>
+
+  <!-- ========================================== -->
+  <!-- 2. EXPRESS GATEWAY                         -->
+  <!-- ========================================== -->
+  <g class="pulse-node" style="transform-origin: 480px 140px;">
+    <rect x="360" y="50" width="240" height="180" rx="12" fill="#FFFFFF" stroke="#DCFCE7" stroke-width="1.5" filter="url(#shadow)" />
+    <path d="M 360,62 a 12,12 0 0 1 12,-12 h 216 a 12,12 0 0 1 12,12 v 24 h -240 z" fill="#F0FDF4" />
+    <text x="380" y="72" class="box-title" fill="#065F46">EXPRESS GATEWAY API</text>
+    <rect x="525" y="60" width="60" height="16" rx="4" fill="#10B981" />
+    <text x="537" y="71" class="badge">SECURED</text>
+
+    <!-- Content Items -->
+    <rect x="375" y="95" width="210" height="35" rx="6" fill="#F8FAFC" stroke="#E2E8F0" />
+    <text x="385" y="110" font-size="10" font-weight="700" fill="#334155">RBAC &amp; Tenant Resolver</text>
+    <text x="385" y="122" font-size="8.5" fill="#64748B">requireRole('admin') · client-URL CORS · helmet()</text>
+
+    <rect x="375" y="138" width="210" height="35" rx="6" fill="#F8FAFC" stroke="#E2E8F0" />
+    <text x="385" y="153" font-size="10" font-weight="700" fill="#334155">Upload Guard &amp; Multer Limits</text>
+    <text x="385" y="165" font-size="8.5" fill="#64748B">10MB File Max cap · MIME Filter validation</text>
+
+    <rect x="375" y="180" width="210" height="38" rx="6" fill="#FFF7ED" stroke="#FFEDD5" />
+    <text x="385" y="195" font-size="9.5" font-weight="700" fill="#C2410C">Redis Guest upload rate limiter</text>
+    <text x="385" y="208" font-size="8.5" fill="#EA580C">Incrs guest:{ip}:uploads with 24h TTL</text>
+  </g>
+
+  <!-- ========================================== -->
+  <!-- 3. DISTRIBUTED BullMQ QUEUE                -->
+  <!-- ========================================== -->
+  <g class="pulse-node" style="transform-origin: 800px 140px;">
+    <rect x="680" y="50" width="240" height="180" rx="12" fill="#FFFFFF" stroke="#F3E8FD" stroke-width="1.5" filter="url(#shadow)" />
+    <path d="M 680,62 a 12,12 0 0 1 12,-12 h 216 a 12,12 0 0 1 12,12 v 24 h -240 z" fill="#FAF5FF" />
+    <text x="700" y="72" class="box-title" fill="#5B21B6">BULLMQ QUEUE ENGINE</text>
+
+    <rect x="695" y="95" width="210" height="35" rx="6" fill="#F8FAFC" stroke="#E2E8F0" />
+    <text x="705" y="110" font-size="10" font-weight="700" fill="#334155">SHA-256 Idempotency</text>
+    <text x="705" y="122" font-size="8.5" fill="#64748B">File hash as BullMQ jobId (deduplication)</text>
+
+    <rect x="695" y="138" width="210" height="35" rx="6" fill="#F8FAFC" stroke="#E2E8F0" />
+    <text x="705" y="153" font-size="10" font-weight="700" fill="#334155">Concurrency Settings</text>
+    <text x="705" y="165" font-size="8.5" fill="#64748B">OCR concurrency = 5 · Exports = 2</text>
+
+    <rect x="695" y="180" width="210" height="38" rx="6" fill="#FDF2F8" stroke="#FCE7F3" />
+    <text x="705" y="195" font-size="9.5" font-weight="700" fill="#9D174D">DLQ &amp; Retention Policy</text>
+    <text x="705" y="208" font-size="8.5" fill="#C2185B">Auto cleanup stale failed jobs (&gt;7 days old)</text>
+  </g>
+
+  <!-- ========================================== -->
+  <!-- 4. RESILIENT 3-LAYER AI PIPELINE           -->
+  <!-- ========================================== -->
+  <g class="pulse-slow" style="transform-origin: 480px 395px;">
+    <!-- Large pipeline box -->
+    <rect x="40" y="295" width="880" height="200" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2" filter="url(#shadow)" />
+    <path d="M 40,311 a 16,16 0 0 1 16,-16 h 848 a 16,16 0 0 1 16,16 v 24 h -880 z" fill="#F8FAFC" />
+    <text x="60" y="317" class="title" font-size="15" fill="#334155">RESILIENT 3-LAYER MULTIMODAL EXTRACTION PIPELINE (WORKER SERVICE)</text>
+    
+    <!-- Route A -->
+    <rect x="60" y="355" width="250" height="120" rx="10" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5" />
+    <text x="75" y="378" box-title font-size="12" fill="#1E40AF" font-weight="700">ROUTE A: Gemini 1.5 Flash</text>
+    <text x="75" y="394" font-size="9.5" fill="#1E3A8A" font-weight="700">Primary Route · native JSON Mode</text>
+    <text x="75" y="408" font-size="9" fill="#3B82F6">15s timeout guard · 3-key Pool rotation</text>
+    <!-- Key status display -->
+    <rect x="75" y="423" width="70" height="16" rx="3" fill="#10B981" />
+    <text x="83" y="434" class="badge">KEY_1: OK</text>
+    <rect x="150" y="423" width="70" height="16" rx="3" fill="#F59E0B" />
+    <text x="154" y="434" class="badge">KEY_2: COOL</text>
+    <text x="75" y="452" font-size="8.5" fill="#64748B">Synchronous Atomic index update</text>
+
+    <!-- Route B -->
+    <rect x="355" y="355" width="250" height="120" rx="10" fill="#FAF5FF" stroke="#E9D5FF" stroke-width="1.5" />
+    <text x="370" y="378" box-title font-size="12" fill="#6B21A8" font-weight="700">ROUTE B: OpenRouter Vision</text>
+    <text x="370" y="394" font-size="9.5" fill="#5B21B6" font-weight="700">Backup Route · Qwen-2.5-VL Vision</text>
+    <text x="370" y="408" font-size="9" fill="#8B5CF6">20s timeout guard · 2-key Pool rotation</text>
+    <text x="370" y="423" font-size="9" fill="#4C1D95">Scrubs Markdown JSON fences defensively</text>
+    <text x="370" y="445" font-size="9" font-weight="700" fill="#9333EA">Tries automatically if Route A fails</text>
+
+    <!-- Route C -->
+    <rect x="650" y="355" width="250" height="120" rx="10" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1.5" />
+    <text x="665" y="378" box-title font-size="12" fill="#166534" font-weight="700">ROUTE C: Tesseract + Mistral</text>
+    <text x="665" y="394" font-size="9.5" fill="#14532D" font-weight="700">Last resort · Local air-gapped OCR</text>
+    <text x="665" y="408" font-size="9" fill="#10B981">45s timeout guard · Sharp Image Pre-resize</text>
+    <text x="665" y="422" font-size="8.5" fill="#64748B">Width cap 2000px · Grayscale · Normalize</text>
+    <text x="665" y="445" font-size="9" font-weight="700" fill="#15803D">Returns empty template on absolute failure</text>
+  </g>
+
+  <!-- ========================================== -->
+  <!-- CONNECTOR PIPELINES WITH FLOW ANIMATION   -->
+  <!-- ========================================== -->
+  
+  <!-- Flow 1: Client to Gateway -->
+  <path id="line1" d="M 280,140 H 360" fill="none" stroke="#CBD5E1" stroke-width="2.5" />
+  <path d="M 280,140 H 360" fill="none" stroke="#3B82F6" stroke-width="2.5" class="flow-line" />
+  <text x="300" y="132" class="marker-label">HTTPS</text>
+  
+  <!-- Flow 2: Gateway to BullMQ -->
+  <path id="line2" d="M 600,140 H 680" fill="none" stroke="#CBD5E1" stroke-width="2.5" />
+  <path d="M 600,140 H 680" fill="none" stroke="#10B981" stroke-width="2.5" class="flow-line" />
+  <text x="625" y="132" class="marker-label">QUEUE</text>
+
+  <!-- Flow 3: Queue to Worker Ingestion Router -->
+  <path id="line3" d="M 800,230 V 295" fill="none" stroke="#CBD5E1" stroke-width="2.5" />
+  <path d="M 800,230 V 295" fill="none" stroke="#8B5CF6" stroke-width="2.5" class="flow-line" />
+  
+  <!-- Flow 4: Worker Return to Gateway Status SSE -->
+  <path id="line4" d="M 160,295 V 230" fill="none" stroke="#CBD5E1" stroke-width="2.5" />
+  <path d="M 160,295 V 230" fill="none" stroke="#EC4899" stroke-width="2.5" class="flow-line-reverse" />
+  <text x="110" y="270" class="marker-label">SSE UPDATES</text>
+
+  <!-- Flow 5: Redis connection line -->
+  <path d="M 480,230 V 295" fill="none" stroke="#94A3B8" stroke-dasharray="4,4" stroke-width="1.5" />
+  <circle cx="480" cy="262" r="3" fill="#64748B" />
+  
+  <!-- Flow 6: Blacklist trace in logs -->
+  <circle cx="480" cy="140" r="4" fill="#3B82F6" class="signal-dot" stroke="#FFFFFF" stroke-width="1" />
+  <circle cx="480" cy="140" r="4" fill="#10B981" class="signal-dot-2" stroke="#FFFFFF" stroke-width="1" />
+
+</svg>

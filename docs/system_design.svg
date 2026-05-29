@@ -205,6 +205,7 @@
   <path d="M 600,140 H 680" fill="none" stroke="#10B981" stroke-width="2.5" class="flow-line" />
   <text x="625" y="132" class="marker-label">QUEUE</text>
 
+  
   <!-- Flow 3: Queue to Worker Ingestion Router -->
   <path id="line3" d="M 800,230 V 295" fill="none" stroke="#CBD5E1" stroke-width="2.5" />
   <path d="M 800,230 V 295" fill="none" stroke="#8B5CF6" stroke-width="2.5" class="flow-line" />
